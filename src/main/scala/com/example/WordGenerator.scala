@@ -2,6 +2,7 @@ package com.example
 
 import com.ibm.sparktc.sparkbench.workload.{Workload, WorkloadDefaults}
 import com.ibm.sparktc.sparkbench.utils.GeneralFunctions._
+import com.ibm.sparktc.sparkbench.utils.SaveModes
 import com.ibm.sparktc.sparkbench.utils.SparkFuncs.writeToDisk
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
@@ -56,6 +57,9 @@ case class WordGenerator(
                           output: Option[String],
                           word: String
                         ) extends Workload {
+
+  override val saveMode = SaveModes.overwrite
+
   /*
       doWorkload is an abstract method from Workload. It optionally takes input data, and it will
       output a one-row DataFrame made from the results case class we defined above.
@@ -85,7 +89,7 @@ case class WordGenerator(
       spark.createDataFrame(rowRDD, schema)
     }
 
-    val (saveTime, _) = time { writeToDisk(output.get, dataDF, spark) }
+    val (saveTime, _) = time { writeToDisk(output.get, saveMode, dataDF, spark) }
 
     val totalTime = generateTime + convertTime + saveTime
 
